@@ -81,10 +81,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "description", content: "The AI personal branding operating system for turning expertise into influence." },
       { name: "author", content: "ShareOn" },
       { property: "og:title", content: "ShareOn Enterprise" },
-      { property: "og:description", content: "Turn expertise into a personal brand that compounds." },
+      { property: "og:description", content: "The AI personal branding operating system for turning expertise into influence." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@ShareOn" },
+      { name: "twitter:title", content: "ShareOn Enterprise" },
+      { name: "twitter:description", content: "The AI personal branding operating system for turning expertise into influence." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/fae9fae9-d41d-4e93-b90c-80b3f1e487a5/id-preview-02f164cf--22ed18a2-e437-4542-a566-d9ef4f2279af.lovable.app-1781290869414.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/fae9fae9-d41d-4e93-b90c-80b3f1e487a5/id-preview-02f164cf--22ed18a2-e437-4542-a566-d9ef4f2279af.lovable.app-1781290869414.png" },
     ],
     links: [
       {
