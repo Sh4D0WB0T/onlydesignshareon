@@ -220,7 +220,56 @@ function Index() {
 
       <footer id="footer" className="border-t border-border px-6 pb-10 pt-24"><div className="mx-auto max-w-7xl"><div className="grid gap-14 md:grid-cols-2 lg:grid-cols-6"><div className="lg:col-span-2"><a href="#top" className="flex items-center gap-2 text-xl font-bold"><span className="flex size-9 items-center justify-center rounded-xl bg-primary"><InfinityIcon/></span>ShareOn</a><p className="mt-5 max-w-xs text-sm leading-relaxed text-muted-foreground">The AI personal branding operating system for people building what’s next.</p><div className="mt-7 flex gap-2">{[Globe2,MessageCircle,Play].map((Icon,index)=><Button key={index} variant="glass" size="icon" aria-label="Social link"><Icon/></Button>)}</div></div>{[{title:"Product",links:["Features","Brand Voice","Avatar Studio","Pricing"]},{title:"Resources",links:["Documentation","Integrations","Guides","API"]},{title:"Company",links:["About","Careers","Contact","Security"]},{title:"Legal",links:["Privacy","Terms","DPA","Status"]}].map((column)=><div key={column.title}><p className="mb-5 text-sm font-semibold">{column.title}</p><ul className="space-y-3">{column.links.map(link=><li key={link}><a href="#top" className="text-sm text-muted-foreground transition hover:text-foreground">{link}</a></li>)}</ul></div>)}</div><div className="mt-20 flex flex-col justify-between gap-4 border-t border-border pt-7 text-xs text-muted-foreground md:flex-row"><p>© 2026 ShareOn, Inc. All systems operational.</p><p>Designed for ideas worth sharing.</p></div></div></footer>
 
-      <div className="fixed bottom-5 right-5 z-50"><AnimatePresence>{assistantOpen && <motion.div className="glass-panel gradient-border absolute bottom-20 right-0 w-[min(22rem,calc(100vw-2.5rem))] rounded-[2rem] p-5" initial={{ opacity: 0, y: 16, scale: .92 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 16, scale: .92 }}><div className="flex items-center justify-between"><div className="flex items-center gap-3"><span className="flex size-10 items-center justify-center rounded-full bg-gradient-to-br from-primary to-cosmic"><Atom/></span><div><p className="font-semibold">ShareOn Intelligence</p><p className="text-xs text-cosmic">Online · ready to explore</p></div></div><Button variant="ghost" size="icon" onClick={()=>setAssistantOpen(false)} aria-label="Close assistant"><X/></Button></div><p className="mt-6 text-sm leading-relaxed text-muted-foreground">I can tour the platform, explain features, search docs, or help you book a tailored demo.</p><div className="mt-5 grid grid-cols-2 gap-2">{["Take a tour","Compare plans","Search docs","Book demo"].map(action=><button key={action} className="rounded-xl border border-border bg-surface-1 px-3 py-3 text-left text-xs transition hover:bg-accent">{action}</button>)}</div><div className="mt-4 flex gap-2 rounded-xl bg-surface-1 p-2"><input className="min-w-0 flex-1 bg-transparent px-2 text-sm outline-none" placeholder="Ask anything..."/><Button variant="hero" size="icon" aria-label="Send message"><Send/></Button></div></motion.div>}</AnimatePresence><button onClick={()=>setAssistantOpen(!assistantOpen)} aria-label="Open AI assistant" className="animate-orb-pulse relative flex size-16 items-center justify-center rounded-full bg-gradient-to-br from-primary via-electric to-cosmic shadow-[var(--shadow-primary)]"><span className="absolute inset-1 rounded-full border border-foreground/20"/><Sparkles className="relative size-6"/></button></div>
+      <div className="fixed bottom-5 right-5 z-50"><AnimatePresence>{assistantOpen && <motion.div className="glass-panel gradient-border absolute bottom-20 right-0 w-[min(22rem,calc(100vw-2.5rem))] rounded-[2rem] p-5" initial={{ opacity: 0, y: 16, scale: .92 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 16, scale: .92 }}><div className="flex items-center justify-between"><div className="flex items-center gap-3"><span className="flex size-10 items-center justify-center rounded-full bg-gradient-to-br from-primary to-cosmic"><Atom/></span><div><p className="font-semibold">ShareOn Intelligence</p><p className="text-xs text-cosmic">Online · ready to explore</p></div></div><Button variant="ghost" size="icon" onClick={()=>setAssistantOpen(false)} aria-label="Close assistant"><X/></Button></div><p className="mt-6 text-sm leading-relaxed text-muted-foreground">I can tour the platform, explain features, search docs, or help you book a tailored demo.</p><div className="mt-5 grid grid-cols-2 gap-2">{([["Take a tour","watch-demo"],["Compare plans","pricing"],["Join waitlist","waitlist"],["Book demo","demo"]] as const).map(([action,id])=><button key={action} onClick={() => { setAssistantOpen(false); paletteAction(id); }} className="rounded-xl border border-border bg-surface-1 px-3 py-3 text-left text-xs transition hover:bg-accent">{action}</button>)}</div><div className="mt-4 flex gap-2 rounded-xl bg-surface-1 p-2"><input className="min-w-0 flex-1 bg-transparent px-2 text-sm outline-none" placeholder="Ask anything..." onKeyDown={(e) => { if (e.key === "Enter") { toast.success("Got it — a strategist will follow up."); setAssistantOpen(false); } }}/><Button variant="hero" size="icon" aria-label="Send message" onClick={() => { toast.success("Got it — a strategist will follow up."); setAssistantOpen(false); }}><Send/></Button></div></motion.div>}</AnimatePresence><button onClick={()=>setAssistantOpen(!assistantOpen)} aria-label="Open AI assistant" className="animate-orb-pulse relative flex size-16 items-center justify-center rounded-full bg-gradient-to-br from-primary via-electric to-cosmic shadow-[var(--shadow-primary)]"><span className="absolute inset-1 rounded-full border border-foreground/20"/><Sparkles className="relative size-6"/></button></div>
     </main>
+  );
+}
+
+function WatchDemoDialog({ open, onClose, onSignup }: { open: boolean; onClose: () => void; onSignup: () => void }) {
+  const steps = [
+    { title: "Drop your knowledge", body: "Upload a doc, paste a transcript, or import an article. ShareOn extracts the ideas worth amplifying." },
+    { title: "Calibrate your voice", body: "Brand Voice AI studies your cadence, vocabulary, and POV to sound unmistakably you." },
+    { title: "Multiply across channels", body: "One source becomes posts, threads, scripts, carousels, newsletters — coordinated, not copied." },
+    { title: "Schedule & learn", body: "Publishing Hub adapts each asset per channel. Analytics tells you what to say next." },
+  ];
+  const [step, setStep] = useState(0);
+  useEffect(() => { if (open) setStep(0); }, [open]);
+  return (
+    <AnimatePresence>
+      {open && (
+        <motion.div className="fixed inset-0 z-[120] flex items-center justify-center bg-background/85 px-4 backdrop-blur-2xl" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose}>
+          <motion.div className="glass-panel gradient-border w-full max-w-3xl overflow-hidden rounded-[2rem]" initial={{ y: 30, scale: 0.96 }} animate={{ y: 0, scale: 1 }} exit={{ y: 20, scale: 0.97 }} onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-start justify-between border-b border-border p-6">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[.2em] text-cosmic">Live product tour</p>
+                <h3 className="mt-2 text-2xl font-bold tracking-tight">Step {step + 1} of {steps.length} · {steps[step].title}</h3>
+              </div>
+              <Button variant="ghost" size="icon" onClick={onClose} aria-label="Close"><X /></Button>
+            </div>
+            <div className="grid gap-0 md:grid-cols-[1fr_1.1fr]">
+              <div className="border-b border-border bg-surface-1 p-8 md:border-b-0 md:border-r">
+                <p className="text-base leading-relaxed text-muted-foreground">{steps[step].body}</p>
+                <div className="mt-8 flex items-center gap-2">
+                  {steps.map((_, i) => <span key={i} className={`h-1.5 flex-1 rounded-full transition ${i <= step ? "bg-primary" : "bg-muted"}`} />)}
+                </div>
+                <div className="mt-8 flex gap-2">
+                  <Button variant="glass" size="sm" disabled={step === 0} onClick={() => setStep((s) => s - 1)}>Back</Button>
+                  {step < steps.length - 1
+                    ? <Button variant="hero" size="sm" onClick={() => setStep((s) => s + 1)}>Next <ArrowRight /></Button>
+                    : <Button variant="hero" size="sm" onClick={() => { onClose(); onSignup(); }}>Start free <ArrowRight /></Button>}
+                </div>
+              </div>
+              <div className="relative min-h-[20rem] overflow-hidden p-6">
+                <div className="absolute inset-0 opacity-80"><CosmicScene /></div>
+                <div className="relative flex h-full flex-col justify-end">
+                  <span className="self-start rounded-full border border-border bg-background/60 px-3 py-1.5 text-xs uppercase tracking-widest text-muted-foreground">ShareOn OS</span>
+                  <p className="mt-6 text-4xl font-bold tracking-[-.04em] text-gradient-ai">{steps[step].title}.</p>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
