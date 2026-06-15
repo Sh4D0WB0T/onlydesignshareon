@@ -103,7 +103,12 @@ function Counter({ value, label }: { value: string; label: string }) {
 }
 
 function Index() {
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const [paletteOpen, setPaletteOpen] = useState(false);
+  const [waitlistOpen, setWaitlistOpen] = useState(false);
+  const [demoOpen, setDemoOpen] = useState(false);
+  const [watchDemoOpen, setWatchDemoOpen] = useState(false);
   const [assistantOpen, setAssistantOpen] = useState(false);
   const [yearly, setYearly] = useState(true);
   const [activeNode, setActiveNode] = useState(2);
@@ -124,6 +129,19 @@ function Index() {
     return () => { window.clearInterval(wordTimer); window.removeEventListener("keydown", keyHandler); };
   }, []);
 
+  const goSignup = () => user ? navigate({ to: "/dashboard" }) : navigate({ to: "/auth", search: { mode: "signup" } });
+  const goSignin = () => user ? navigate({ to: "/dashboard" }) : navigate({ to: "/auth", search: { mode: "signin" } });
+  const scrollTo = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+  const paletteAction = (id: string) => {
+    if (id === "signup") return goSignup();
+    if (id === "signin") return goSignin();
+    if (id === "dashboard") return navigate({ to: "/dashboard" });
+    if (id === "waitlist") return setWaitlistOpen(true);
+    if (id === "demo") return setDemoOpen(true);
+    if (id === "watch-demo") return setWatchDemoOpen(true);
+    scrollTo(id);
+  };
+
   const activeArchitecture = architecture[activeNode];
   const ActiveArchitectureIcon = activeArchitecture.icon;
   const prices = useMemo(() => yearly ? [0, 29, 79] : [0, 39, 99], [yearly]);
@@ -131,13 +149,21 @@ function Index() {
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-background" onMouseMove={(event) => { mouseX.set(event.clientX / window.innerWidth); mouseY.set(event.clientY / window.innerHeight); }}>
-      <CommandPalette open={paletteOpen} onClose={() => setPaletteOpen(false)} />
+      <CommandPalette open={paletteOpen} onClose={() => setPaletteOpen(false)} onAction={paletteAction} />
+      <WaitlistDialog open={waitlistOpen} onClose={() => setWaitlistOpen(false)} />
+      <DemoDialog open={demoOpen} onClose={() => setDemoOpen(false)} />
+      <WatchDemoDialog open={watchDemoOpen} onClose={() => setWatchDemoOpen(false)} onSignup={goSignup} />
       <motion.div className="pointer-events-none fixed z-0 size-[34rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-electric/10 blur-[120px]" style={{ left: glowX, top: glowY }} />
 
       <header className="fixed inset-x-0 top-4 z-50 mx-auto flex w-[calc(100%-2rem)] max-w-6xl items-center justify-between rounded-full border border-border bg-background/65 px-3 py-2 shadow-[var(--shadow-ambient)] backdrop-blur-2xl md:top-6 md:px-4">
         <a href="#top" className="flex items-center gap-2 px-2 font-bold tracking-tight"><span className="flex size-8 items-center justify-center rounded-xl bg-primary shadow-[var(--shadow-primary)]"><InfinityIcon className="size-5" /></span>ShareOn</a>
         <nav className="hidden items-center gap-1 lg:flex" aria-label="Main navigation">{navItems.map((item) => <a key={item} href={`#${item.toLowerCase()}`} className="rounded-full px-3 py-2 text-sm text-muted-foreground transition hover:bg-accent hover:text-foreground">{item}</a>)}</nav>
-        <div className="flex items-center gap-2"><Button variant="ghost" size="sm" className="hidden sm:inline-flex">Log in</Button><Button variant="ghost" size="sm" className="hidden md:inline-flex" onClick={() => setPaletteOpen(true)}><Command />K</Button><Button variant="hero" size="sm">Start free <ArrowRight /></Button><Button variant="ghost" size="icon" className="lg:hidden" aria-label="Open menu"><Menu /></Button></div>
+        <div className="flex items-center gap-2">
+          <Button variant="ghost" size="sm" className="hidden sm:inline-flex" onClick={goSignin}>{user ? "Dashboard" : "Log in"}</Button>
+          <Button variant="ghost" size="sm" className="hidden md:inline-flex" onClick={() => setPaletteOpen(true)}><Command />K</Button>
+          <Button variant="hero" size="sm" onClick={goSignup}>{user ? "Open app" : "Start free"} <ArrowRight /></Button>
+          <Button variant="ghost" size="icon" className="lg:hidden" aria-label="Open menu" onClick={() => setPaletteOpen(true)}><Menu /></Button>
+        </div>
       </header>
 
       <section id="top" className="noise relative flex min-h-[105svh] items-center pt-28">
