@@ -74,23 +74,24 @@ function MagneticButton({ children, ...props }: React.ComponentProps<typeof Butt
   return <motion.div style={{ x: springX, y: springY }} onMouseMove={move} onMouseLeave={() => { x.set(0); y.set(0); }}><Button {...props}>{children}</Button></motion.div>;
 }
 
-function CommandPalette({ open, onClose }: { open: boolean; onClose: () => void }) {
+function CommandPalette({ open, onClose, onAction }: { open: boolean; onClose: () => void; onAction: (id: string) => void }) {
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState(0);
-  const commands = [
-    ["Open Features", "features"], ["Open Pricing", "pricing"], ["Book Demo", "pricing"],
-    ["Contact Team", "footer"], ["Open Analytics", "metrics"], ["Open Integrations", "architecture"],
-    ["Open Documentation", "footer"], ["Start Free Trial", "sandbox"],
+  const commands: [string, string][] = [
+    ["Start free trial", "signup"], ["Sign in", "signin"], ["Open dashboard", "dashboard"],
+    ["Join waitlist", "waitlist"], ["Book enterprise demo", "demo"], ["Watch live demo", "watch-demo"],
+    ["Open Features", "features"], ["Open Pricing", "pricing"], ["Open Architecture", "architecture"],
+    ["Open Sandbox", "sandbox"], ["Contact team", "demo"],
   ];
   const filtered = commands.filter(([label]) => label.toLowerCase().includes(query.toLowerCase()));
   useEffect(() => setSelected(0), [query]);
-  const choose = (id: string) => { document.getElementById(id)?.scrollIntoView({ behavior: "smooth" }); onClose(); };
+  const choose = (id: string) => { onAction(id); onClose(); };
   return (
     <AnimatePresence>
       {open && <motion.div className="fixed inset-0 z-[100] flex items-start justify-center bg-background/90 px-4 pt-[12vh] backdrop-blur-2xl" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose}>
         <motion.div className="glass-panel gradient-border w-full max-w-2xl overflow-hidden rounded-[2rem]" initial={{ y: 30, scale: .96 }} animate={{ y: 0, scale: 1 }} exit={{ y: 20, scale: .97 }} onClick={(event) => event.stopPropagation()}>
           <div className="flex items-center gap-4 border-b border-border px-6 py-5"><Search className="text-muted-foreground" /><input autoFocus value={query} onChange={(event) => setQuery(event.target.value)} onKeyDown={(event) => { if (event.key === "ArrowDown") setSelected((selected + 1) % filtered.length); if (event.key === "ArrowUp") setSelected((selected - 1 + filtered.length) % filtered.length); if (event.key === "Enter" && filtered[selected]) choose(filtered[selected][1]); if (event.key === "Escape") onClose(); }} placeholder="Where do you want to go?" className="w-full bg-transparent text-xl outline-none placeholder:text-muted-foreground" /><kbd className="rounded-lg border border-border bg-muted px-2 py-1 text-xs text-muted-foreground">ESC</kbd></div>
-          <div className="p-3"><p className="px-4 py-3 text-xs font-semibold uppercase tracking-[.2em] text-muted-foreground">{query ? "Results" : "Recent actions"}</p>{filtered.map(([label, id], index) => <button key={label} onMouseEnter={() => setSelected(index)} onClick={() => choose(id)} className={`flex w-full items-center justify-between rounded-2xl px-4 py-4 text-left transition ${selected === index ? "bg-accent text-foreground" : "text-muted-foreground"}`}><span className="flex items-center gap-3"><Command className="size-4" />{label}</span><ChevronRight className="size-4" /></button>)}</div>
+          <div className="p-3"><p className="px-4 py-3 text-xs font-semibold uppercase tracking-[.2em] text-muted-foreground">{query ? "Results" : "Quick actions"}</p>{filtered.map(([label, id], index) => <button key={label} onMouseEnter={() => setSelected(index)} onClick={() => choose(id)} className={`flex w-full items-center justify-between rounded-2xl px-4 py-4 text-left transition ${selected === index ? "bg-accent text-foreground" : "text-muted-foreground"}`}><span className="flex items-center gap-3"><Command className="size-4" />{label}</span><ChevronRight className="size-4" /></button>)}</div>
         </motion.div>
       </motion.div>}
     </AnimatePresence>
