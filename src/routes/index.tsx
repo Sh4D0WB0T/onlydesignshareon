@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { AnimatePresence, motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import {
   Activity, ArrowRight, Atom, BarChart3, BookOpen, Boxes, BrainCircuit, CalendarDays,
@@ -7,8 +7,12 @@ import {
   Video, WandSparkles, X, Zap,
 } from "lucide-react";
 import { useEffect, useMemo, useState, type FormEvent, type MouseEvent } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { CosmicScene } from "@/components/cosmic-scene";
+import { WaitlistDialog } from "@/components/waitlist-dialog";
+import { DemoDialog } from "@/components/demo-dialog";
+import { useAuth } from "@/lib/auth-context";
 import creatorsImage from "@/assets/shareon-creators.jpg";
 
 export const Route = createFileRoute("/")({
